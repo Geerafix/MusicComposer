@@ -7,7 +7,7 @@ import com.googlecode.lanterna.screen.*;
 import com.googlecode.lanterna.terminal.*;
 
 public class MusicComposer {
-    private static Screen screen = TerminalFacade.createScreen(); 
+    private static Screen screen = TerminalFacade.createScreen();
     private static int[] notes = {
             0, 24, 25, 26, 27, 28, 29, 30, 31, 32,
             33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
@@ -26,23 +26,14 @@ public class MusicComposer {
     }
 
     public static void title() throws MidiUnavailableException, InterruptedException, IOException {
-        Scanner scan = new Scanner(new File("scenes/title.txt"));
-        String part;
         int y = 0;
         boolean run = true;
 
         screen.clear();
 
-        while (scan.hasNext()) {
-            part = scan.nextLine();
-            screen.putString(10, y, part,
-                    Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-            y++;
-        }
-        screen.putString(80, 28, "by Adam Grzeszczuk",
-                Terminal.Color.BLUE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+        reader(new Scanner(new File("scenes/title.txt")), 10, y);
+        put(80, 28, "by Adam Grzeszczuk");
 
-        scan.close();
         screen.refresh();
 
         while (run) {
@@ -69,7 +60,6 @@ public class MusicComposer {
     }
 
     public static void compose() throws MidiUnavailableException, InterruptedException, IOException {
-        Scanner scan = new Scanner(new File("scenes/compose.txt"));
         ArrayList<Note> track = new ArrayList<>();
         StringBuilder filename = new StringBuilder("");
         Synthesizer synth = MidiSystem.getSynthesizer();
@@ -82,24 +72,15 @@ public class MusicComposer {
         synth.open();
         screen.clear();
 
-        while (scan.hasNext()) {
-            String part = scan.nextLine();
-            screen.putString(2, y + 3, part,
-                    Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-            y++;
-        }
+        reader(new Scanner(new File("scenes/compose.txt")), 2, y+ 3);
 
-        scan.close();
         screen.refresh();
 
         noteToASCIIArt(noteConv(notes[currentNote]));
         durationToASCIIArt(currentDuration);
-        screen.putString(2, 1, "Filename: ",
-                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-        screen.putString(70, 1, "Position: " + (position + 1),
-                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-        screen.putString(85, 1, "Note count: " + (track.size()),
-                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+        put(2, 1, "Filename: ");
+        put(70, 1, "Position: " + (position + 1));
+        put(85, 1, "Note count: " + (track.size()));
         screen.refresh();
 
         while (run) {
@@ -159,10 +140,8 @@ public class MusicComposer {
                         noteToASCIIArt(noteConv(notes[currentNote]));
                         durationToASCIIArt(currentDuration);
 
-                        screen.putString(80, 1, Integer.toString(position + 1), Terminal.Color.WHITE,
-                                Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-                        screen.putString(97, 1, Integer.toString(track.size()),
-                                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                        put(80, 1, Integer.toString(position + 1));
+                        put(97, 1, Integer.toString(track.size()));
 
                     } else if (position < track.size()) {
                         track.set(position, new Note(notes[currentNote], currentDuration));
@@ -175,12 +154,9 @@ public class MusicComposer {
                             trackX += 13;
                             trackY = 4;
                         }
-                        screen.putString(trackX, trackY, (i + 1) + ". ",
-                                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-                        screen.putString((trackX + 3), trackY, noteConv(track.get(i).getNumber()),
-                                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-                        screen.putString((trackX + 7), trackY, Integer.toString(track.get(i).getDuration()),
-                                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                        put(trackX, trackY, (i + 1) + ". ");
+                        put((trackX + 3), trackY, noteConv(track.get(i).getNumber()));
+                        put((trackX + 7), trackY, Integer.toString(track.get(i).getDuration()));
                         trackY += 1;
                     }
                     trackY = 4;
@@ -213,10 +189,8 @@ public class MusicComposer {
                         durationToASCIIArt(track.get(position).getDuration());
                     }
 
-                    screen.putString(80, 1, "   ",
-                            Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-                    screen.putString(80, 1, Integer.toString(position + 1),
-                            Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                    put(80, 1, "   ");
+                    put(80, 1, Integer.toString(position + 1));
 
                     screen.refresh();
                     break;
@@ -243,10 +217,8 @@ public class MusicComposer {
                         durationToASCIIArt(currentDuration);
                     }
 
-                    screen.putString(80, 1, "   ",
-                            Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-                    screen.putString(80, 1, Integer.toString(position + 1),
-                            Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                    put(80, 1, "   ");
+                    put(80, 1, Integer.toString(position + 1));
 
                     screen.refresh();
                     break;
@@ -260,12 +232,9 @@ public class MusicComposer {
                         noteToASCIIArt(noteConv(notes[currentNote]));
                         durationToASCIIArt(currentDuration);
                         position = track.size();
-                        screen.putString(97, 1, "   ",
-                                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-                        screen.putString(97, 1, Integer.toString(track.size()),
-                                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-                        screen.putString(80, 1, Integer.toString(position + 1),
-                                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                        put(97, 1, "   ");
+                        put(97, 1, Integer.toString(track.size()));
+                        put(80, 1, Integer.toString(position + 1));
                         screen.refresh();
 
                         clearTrack();
@@ -275,12 +244,9 @@ public class MusicComposer {
                                 trackX += 13;
                                 trackY = 4;
                             }
-                            screen.putString(trackX, trackY, (i + 1) + ". ",
-                                    Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-                            screen.putString((trackX + 3), trackY, noteConv(track.get(i).getNumber()),
-                                    Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-                            screen.putString((trackX + 7), trackY, Integer.toString(track.get(i).getDuration()),
-                                    Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                            put(trackX, trackY, (i + 1) + ". ");
+                            put((trackX + 3), trackY, noteConv(track.get(i).getNumber()));
+                            put((trackX + 7), trackY, Integer.toString(track.get(i).getDuration()));
                             trackY += 1;
                         }
                         trackY = 4;
@@ -292,8 +258,7 @@ public class MusicComposer {
                     if (lastChar < 27) {
                         filename.append(key.getCharacter());
                         ;
-                        screen.putString(12, 1, filename.toString(),
-                                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                        put(12, 1, filename.toString());
                         lastChar++;
                     }
                     screen.refresh();
@@ -301,10 +266,8 @@ public class MusicComposer {
                 case Backspace:
                     if (lastChar > 11) {
                         filename.delete(filename.toString().length() - 1, filename.toString().length());
-                        screen.putString(lastChar, 1, " ",
-                                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-                        screen.putString(12, 1, filename.toString(),
-                                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                        put(lastChar, 1, " ");
+                        put(12, 1, filename.toString());
                         lastChar--;
                     }
                     screen.refresh();
@@ -326,7 +289,6 @@ public class MusicComposer {
     }
 
     public static void tracks() throws MidiUnavailableException, InterruptedException, IOException {
-        Scanner scan = new Scanner(new File("scenes/tracks.txt"));
         File[] tracks = new File("tracks").listFiles();
         Synthesizer synth = MidiSystem.getSynthesizer();
         MidiChannel[] channels = synth.getChannels();
@@ -336,11 +298,7 @@ public class MusicComposer {
         screen.clear();
         synth.open();
 
-        while (scan.hasNext()) {
-            String part = scan.nextLine();
-            screen.putString(11, y, part, Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-            y++;
-        }
+        reader(new Scanner(new File("scenes/tracks.txt")), 11, y);
 
         for (int trackNr = 0; trackNr < tracks.length; trackNr++) {
             screen.putString(14, trackNr + 10,
@@ -351,9 +309,8 @@ public class MusicComposer {
         }
 
         screen.putString(12, select + 10, ">",
-                Terminal.Color.BLUE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                Terminal.Color.GREEN, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
 
-        scan.close();
         screen.refresh();
 
         while (run) {
@@ -369,26 +326,26 @@ public class MusicComposer {
                     break;
                 case ArrowUp:
                     screen.putString(12, select + 10, " ",
-                            Terminal.Color.BLUE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                            Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
                     if (select == 0) {
                         select = tracks.length - 1;
                     } else {
                         --select;
                     }
                     screen.putString(12, select + 10, ">",
-                            Terminal.Color.BLUE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                            Terminal.Color.GREEN, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
                     screen.refresh();
                     break;
                 case ArrowDown:
                     screen.putString(12, select + 10, " ",
-                            Terminal.Color.BLUE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                            Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
                     if (select == tracks.length - 1) {
                         select = 0;
                     } else {
                         ++select;
                     }
                     screen.putString(12, select + 10, ">",
-                            Terminal.Color.BLUE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                            Terminal.Color.GREEN, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
                     screen.refresh();
                     break;
                 case Enter:
@@ -420,8 +377,6 @@ public class MusicComposer {
 
     public static void edit(ArrayList<Note> track, String fname)
             throws FileNotFoundException, IOException, MidiUnavailableException, InterruptedException {
-        Scanner scan = new Scanner(new File("scenes/edit.txt"));
-        String part;
         boolean run = true;
         int currentNote = track.get(0).getNumber() - 23,
                 currentDuration = track.get(0).getDuration(),
@@ -429,25 +384,17 @@ public class MusicComposer {
                 position = 0;
 
         screen.clear();
-
-        while (scan.hasNext()) {
-            part = scan.nextLine();
-            screen.putString(2, y + 3, part,
-                    Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-            y++;
-        }
+            
+        reader(new Scanner(new File("scenes/edit.txt")), 2, y + 3);
 
         for (int i = 0; i < track.size(); i++) {
             if (trackY == 29) {
                 trackX += 13;
                 trackY = 4;
             }
-            screen.putString(trackX, trackY, (i + 1) + ". ",
-                    Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-            screen.putString((trackX + 3), trackY, noteConv(track.get(i).getNumber()),
-                    Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-            screen.putString((trackX + 7), trackY, Integer.toString(track.get(i).getDuration()),
-                    Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+            put(trackX, trackY, (i + 1) + ". ");
+            put((trackX + 3), trackY, noteConv(track.get(i).getNumber()));
+            put((trackX + 7), trackY, Integer.toString(track.get(i).getDuration()));
             trackY += 1;
         }
         trackY = 4;
@@ -456,15 +403,9 @@ public class MusicComposer {
         noteToASCIIArt(noteConv(track.get(0).getNumber()));
         durationToASCIIArt(track.get(0).getDuration());
 
-        screen.putString(2, 1, "Filename: " + fname.substring(7, fname.length() - 4),
-                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-        screen.putString(70, 1, "Position: " + (position + 1),
-                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-        screen.putString(85, 1, "Note count: " + (track.size()),
-                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-        screen.refresh();
-
-        scan.close();
+        put(2, 1, "Filename: " + fname.substring(7, fname.length() - 4));
+        put(70, 1, "Position: " + (position + 1));
+        put(85, 1, "Note count: " + (track.size()));
         screen.refresh();
 
         while (run) {
@@ -525,12 +466,9 @@ public class MusicComposer {
                             trackX += 13;
                             trackY = 4;
                         }
-                        screen.putString(trackX, trackY, (i + 1) + ". ",
-                                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-                        screen.putString((trackX + 3), trackY, noteConv(track.get(i).getNumber()),
-                                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-                        screen.putString((trackX + 7), trackY, Integer.toString(track.get(i).getDuration()),
-                                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                        put(trackX, trackY, (i + 1) + ". ");
+                        put((trackX + 3), trackY, noteConv(track.get(i).getNumber()));
+                        put((trackX + 7), trackY, Integer.toString(track.get(i).getDuration()));
                         trackY += 1;
                     }
                     trackY = 4;
@@ -548,11 +486,9 @@ public class MusicComposer {
                         durationToASCIIArt(track.get(position).getDuration());
                     }
 
-                    screen.putString(80, 1, "   ",
-                            Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-                    screen.putString(80, 1, Integer.toString(position + 1),
-                            Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-
+                    put(80, 1, "   ");
+                    put(80, 1, Integer.toString(position + 1));
+                    
                     screen.refresh();
                     break;
                 case End:
@@ -569,10 +505,8 @@ public class MusicComposer {
                         durationToASCIIArt(track.get(position).getDuration());
                     }
 
-                    screen.putString(80, 1, "   ",
-                            Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-                    screen.putString(80, 1, Integer.toString(position + 1),
-                            Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                    put(80, 1, "   ");
+                    put(80, 1, Integer.toString(position + 1));
 
                     screen.refresh();
                     break;
@@ -612,12 +546,7 @@ public class MusicComposer {
         for (char digit : note.toCharArray()) {
             scan = new Scanner(new File("characters/" + digit + ".txt"));
             y = 12;
-            while (scan.hasNext()) {
-                String part = scan.nextLine();
-                screen.putString(x, y, part,
-                        Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-                y++;
-            }
+            reader(scan, x, y);
             scan.close();
             screen.refresh();
             x = x + 9;
@@ -627,17 +556,11 @@ public class MusicComposer {
     private static void durationToASCIIArt(int stream) throws FileNotFoundException {
         String note = String.valueOf(stream);
         Scanner scan;
-        String part;
         int x = 34, y = 12;
         for (char digit : note.toCharArray()) {
             scan = new Scanner(new File("characters/" + digit + ".txt"));
             y = 12;
-            while (scan.hasNext()) {
-                part = scan.nextLine();
-                screen.putString(x, y, part,
-                        Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-                y++;
-            }
+            reader(scan, x, y);
             scan.close();
             screen.refresh();
             x = x + 9;
@@ -647,8 +570,7 @@ public class MusicComposer {
     private static void clearNote() {
         int x = 3, y = 12;
         while (y < 17) {
-            screen.putString(x, y, "                        ",
-                    Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+            put(x, y, "                          ");
             y++;
         }
     }
@@ -656,16 +578,14 @@ public class MusicComposer {
     private static void clearDuration() {
         int x = 34, y = 12;
         while (y < 17) {
-            screen.putString(x, y, "                                   ",
-                    Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+            put(x, y, "                                   ");
             y++;
         }
     }
 
     private static void clearTrack() {
         for (int y = 0; y < 25; y++) {
-            screen.putString(75, y + 4, "                               ",
-                    Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+            put(75, y + 4, "                               ");
         }
     }
 
@@ -677,5 +597,18 @@ public class MusicComposer {
         }
         scan.close();
         return track;
+    }
+
+    public static void reader(Scanner scan, int x, int y) {
+        while (scan.hasNext()) {
+            String part = scan.nextLine();
+            put(x, y, part);
+            y++;
+        }
+    }
+
+    public static void put(int x, int y, String text) {
+        screen.putString(x, y, text,
+                    Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
     }
 }
