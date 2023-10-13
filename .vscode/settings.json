@@ -1,0 +1,14 @@
+{
+    "java.project.sourcePaths": ["src"],
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": {
+        "include": [
+            "lib/**/*.jar",
+            "j:\\Mój dysk\\VS Code\\Java\\KCK\\p\\MusicComposer\\lib\\lanterna-3.0.0.jar",
+            "j:\\Mój dysk\\VS Code\\Java\\KCK\\p\\MusicComposer\\lib\\lanterna-2.1.7.jar"
+        ],
+        "exclude": [
+            "lib/lanterna-3.0.0.jar"
+        ]
+    }
+}
