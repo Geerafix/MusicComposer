@@ -135,11 +135,6 @@ public class MusicComposer {
                     screen.refresh();
                     break;
                 case Escape:
-                    // for (Note note : track) {
-                    //     channels[channel].noteOn(note.getNumber(), 100);
-                    //     Thread.sleep(note.getDuration());
-                    //     channels[channel].noteOff(note.getNumber());
-                    // }
                     title();
                     break;
                 case Insert:
