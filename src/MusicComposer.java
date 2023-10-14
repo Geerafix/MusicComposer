@@ -317,20 +317,7 @@ public class MusicComposer {
 
         screen.clear();         
         reader(new Scanner(new File("scenes/edit.txt")), 2, y + 3);
-
-        for (int i = 0; i < track.size(); i++) {
-            if (trackY == 29) {
-                trackX += 13;
-                trackY = 4;
-            }
-            put(trackX, trackY, (i + 1) + ". ");
-            put((trackX + 3), trackY, noteConv(track.get(i).getNumber()));
-            put((trackX + 7), trackY, Integer.toString(track.get(i).getDuration()));
-            trackY += 1;
-        }
-        trackY = 4;
-        trackX = 75;
-
+        refreshTrack(trackX, trackY, track);
         noteToASCIIArt(noteConv(track.get(0).getNumber()));
         durationToASCIIArt(track.get(0).getDuration());
         put(2, 1, "Filename: " + fname.substring(7, fname.length() - 4));
