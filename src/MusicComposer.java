@@ -60,7 +60,8 @@ public class MusicComposer {
         StringBuilder filename = new StringBuilder("");
         Synthesizer synth = MidiSystem.getSynthesizer();
         MidiChannel[] channels = synth.getChannels();
-        int channel = 0, y = 0, trackX = 75, trackY = 4, position = 0, currentNote = 1, currentDuration = 200, lastChar = 11;
+        int channel = 0, y = 0, trackX = 75, trackY = 4, position = 0, currentNote = 1, currentDuration = 200,
+                lastChar = 11;
         boolean run = true;
 
         synth.open();
@@ -313,9 +314,13 @@ public class MusicComposer {
     public static void edit(ArrayList<Note> track, String fname)
             throws FileNotFoundException, IOException, MidiUnavailableException, InterruptedException {
         boolean run = true;
-        int currentNote = track.get(0).getNumber() - 23, currentDuration = track.get(0).getDuration(), position = 0, y = 0,  trackX = 75, trackY = 4;
+        Synthesizer synth = MidiSystem.getSynthesizer();
+        MidiChannel[] channels = synth.getChannels();
+        int channel = 0, currentNote = track.get(0).getNumber() - 23, currentDuration = track.get(0).getDuration(), position = 0,
+                y = 0, trackX = 75, trackY = 4;
 
-        screen.clear();         
+        synth.open();
+        screen.clear();
         reader(new Scanner(new File("scenes/edit.txt")), 2, y + 3);
         refreshTrack(trackX, trackY, track);
         noteToASCIIArt(noteConv(track.get(0).getNumber()));
@@ -413,6 +418,11 @@ public class MusicComposer {
                     }
                     toFile.close();
                     break;
+                case Insert:
+                    channels[channel].noteOn(notes[currentNote], 100);
+                    Thread.sleep(currentDuration);
+                    channels[channel].noteOff(notes[currentNote]);
+                    break;
                 case Escape:
                     tracks();
                     break;
@@ -471,7 +481,7 @@ public class MusicComposer {
         }
     }
 
-    public static void refreshTrack(int trackX, int  trackY, ArrayList<Note> track) {
+    public static void refreshTrack(int trackX, int trackY, ArrayList<Note> track) {
         for (int y = 0; y < 25; y++) {
             put(75, y + 4, "                               ");
         }
@@ -506,6 +516,6 @@ public class MusicComposer {
 
     public static void put(int x, int y, String text) {
         screen.putString(x, y, text,
-                    Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
     }
 }
