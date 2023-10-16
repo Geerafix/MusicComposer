@@ -60,7 +60,7 @@ public class MusicComposer {
         StringBuilder filename = new StringBuilder("");
         Synthesizer synth = MidiSystem.getSynthesizer();
         MidiChannel[] channels = synth.getChannels();
-        int channel = 0, y = 0, trackX = 75, trackY = 4, position = 0, currentNote = 1, currentDuration = 200,
+        int channel = 0, y = 0, trackX = 75, trackY = 4, position = 0, currentNote = 1, currentDuration = 500,
                 lastChar = 11;
         boolean run = true;
 
@@ -122,7 +122,7 @@ public class MusicComposer {
                         track.add(new Note(notes[currentNote], currentDuration));
                         position += 1;
                         currentNote = 1;
-                        currentDuration = 200;
+                        currentDuration = 500;
                         clearNote();
                         clearDuration();
                         noteToASCIIArt(noteConv(notes[currentNote]));
@@ -171,7 +171,7 @@ public class MusicComposer {
                     }
                     if (position == track.size()) {
                         currentNote = 1;
-                        currentDuration = 200;
+                        currentDuration = 500;
                         clearNote();
                         clearDuration();
                         noteToASCIIArt(noteConv(notes[currentNote]));
@@ -185,7 +185,7 @@ public class MusicComposer {
                     if (position < track.size()) {
                         track.remove(position);
                         currentNote = 1;
-                        currentDuration = 200;
+                        currentDuration = 500;
                         position = track.size();
                         clearNote();
                         clearDuration();
@@ -231,7 +231,7 @@ public class MusicComposer {
     }
 
     public static void tracks() throws MidiUnavailableException, InterruptedException, IOException {
-        File[] tracks = new File("tracks").listFiles();
+        List<File> tracksList = Arrays.asList(new File("tracks").listFiles());
         Synthesizer synth = MidiSystem.getSynthesizer();
         MidiChannel[] channels = synth.getChannels();
         int channel = 0, select = 0, y = 0;
@@ -240,14 +240,7 @@ public class MusicComposer {
         screen.clear();
         synth.open();
         reader(new Scanner(new File("scenes/tracks.txt")), 11, y);
-
-        for (int trackNr = 0; trackNr < tracks.length; trackNr++) {
-            screen.putString(14, trackNr + 10,
-                    trackNr + 1 + ". " + tracks[trackNr].getName().substring(0, tracks[trackNr].getName().length() - 4),
-                    Terminal.Color.WHITE,
-                    Terminal.Color.BLACK,
-                    ScreenCharacterStyle.Bold);
-        }
+        displayTracks(tracksList);
         screen.putString(12, select + 10, ">",
                 Terminal.Color.GREEN, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
         screen.refresh();
@@ -265,7 +258,7 @@ public class MusicComposer {
                 case ArrowUp:
                     put(12, select + 10, " ");
                     if (select == 0) {
-                        select = tracks.length - 1;
+                        select = tracksList.size() - 1;
                     } else {
                         --select;
                     }
@@ -275,7 +268,7 @@ public class MusicComposer {
                     break;
                 case ArrowDown:
                     put(12, select + 10, " ");
-                    if (select == tracks.length - 1) {
+                    if (select == tracksList.size() - 1) {
                         select = 0;
                     } else {
                         ++select;
@@ -285,7 +278,7 @@ public class MusicComposer {
                     screen.refresh();
                     break;
                 case Enter:
-                    Scanner loadTrack = new Scanner(new File(tracks[select].toString()));
+                    Scanner loadTrack = new Scanner(new File(tracksList.get(select).toString()));
                     StringBuilder content = new StringBuilder("");
 
                     while (loadTrack.hasNextLine()) {
@@ -303,7 +296,20 @@ public class MusicComposer {
                     }
                     break;
                 case Insert:
-                    edit(toList(tracks[select].getName()), "tracks/" + tracks[select].getName());
+                    edit(toList(tracksList.get(select).getName()), "tracks/" + tracksList.get(select).getName());
+                    break;
+                case Delete :
+                    tracksList.get(select).delete();
+                    tracksList = Arrays.asList(new File("tracks").listFiles());
+                    for (File f : tracksList) {
+                        System.out.println(f.toPath());
+                    }
+                    refreshTracks(tracksList);
+                    put(12, select + 10, " ");
+                    select = 0;
+                    screen.putString(12, select + 10, ">",
+                            Terminal.Color.GREEN, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                    screen.refresh();
                     break;
                 default:
                     break;
@@ -316,7 +322,8 @@ public class MusicComposer {
         boolean run = true;
         Synthesizer synth = MidiSystem.getSynthesizer();
         MidiChannel[] channels = synth.getChannels();
-        int channel = 0, currentNote = track.get(0).getNumber() - 23, currentDuration = track.get(0).getDuration(), position = 0,
+        int channel = 0, currentNote = track.get(0).getNumber() - 23, currentDuration = track.get(0).getDuration(),
+                position = 0,
                 y = 0, trackX = 75, trackY = 4;
 
         synth.open();
@@ -374,11 +381,39 @@ public class MusicComposer {
                     screen.refresh();
                     break;
                 case Tab:
-                    if (position < track.size()) {
+                    if (position == track.size() && track.size() < 50) {
+                        track.add(new Note(notes[currentNote], currentDuration));
+                        position += 1;
+                        currentNote = 1;
+                        currentDuration = 500;
+                        clearNote();
+                        clearDuration();
+                        noteToASCIIArt(noteConv(notes[currentNote]));
+                        durationToASCIIArt(currentDuration);
+                        put(80, 1, Integer.toString(position + 1));
+                        put(97, 1, Integer.toString(track.size()));
+                    } else if (position < track.size()) {
                         track.set(position, new Note(notes[currentNote], currentDuration));
                     }
                     refreshTrack(trackX, trackY, track);
                     screen.refresh();
+                    break;
+                case Delete:
+                    if (position < track.size()) {
+                        track.remove(position);
+                        currentNote = 1;
+                        currentDuration = 500;
+                        position = track.size();
+                        clearNote();
+                        clearDuration();
+                        noteToASCIIArt(noteConv(notes[currentNote]));
+                        durationToASCIIArt(currentDuration);
+                        put(97, 1, "   ");
+                        put(97, 1, Integer.toString(track.size()));
+                        put(80, 1, Integer.toString(position + 1));
+                        refreshTrack(trackX, trackY, track);
+                        screen.refresh();
+                    }
                     break;
                 case Home:
                     if (position > 0) {
@@ -395,7 +430,7 @@ public class MusicComposer {
                     screen.refresh();
                     break;
                 case End:
-                    if (position < track.size() - 1) {
+                    if (position < track.size()) {
                         position += 1;
                     }
                     if (position < track.size()) {
@@ -405,6 +440,14 @@ public class MusicComposer {
                         clearDuration();
                         noteToASCIIArt(noteConv(track.get(position).getNumber()));
                         durationToASCIIArt(track.get(position).getDuration());
+                    }
+                    if (position == track.size()) {
+                        currentNote = 1;
+                        currentDuration = 500;
+                        clearNote();
+                        clearDuration();
+                        noteToASCIIArt(noteConv(notes[currentNote]));
+                        durationToASCIIArt(currentDuration);
                     }
                     put(80, 1, "   ");
                     put(80, 1, Integer.toString(position + 1));
@@ -517,5 +560,18 @@ public class MusicComposer {
     public static void put(int x, int y, String text) {
         screen.putString(x, y, text,
                 Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+    }
+
+    public static void displayTracks(List<File> tracks) {
+        for (int trackNr = 0; trackNr < tracks.size(); trackNr++) {
+            put(14, trackNr + 10, trackNr + 1 + ". " + tracks.get(trackNr).getName().substring(0, tracks.get(trackNr).getName().length() - 4));
+        }
+    }
+
+    public static void refreshTracks(List<File> tracks) {
+        for (int i = 0 ; i < tracks.size() + 1 ; i++) {
+            put(12, i + 10, "                     ");
+        }
+        displayTracks(tracks);
     }
 }
