@@ -50,6 +50,7 @@ public class MusicComposer {
                     break;
                 case Escape:
                     screen.stopScreen();
+                    System.exit(0);
                     break;
                 default:
                     break;
@@ -219,6 +220,7 @@ public class MusicComposer {
                     break;
                 case Enter:
                     if (Arrays.asList(new File("tracks").listFiles()).size() < 25) {
+                        saveThread();
                         FileWriter fileWriter = new FileWriter("tracks/" + filename.toString() + ".txt");
                         PrintWriter printWriter = new PrintWriter(fileWriter);
                         for (Note note : track) {
@@ -227,19 +229,6 @@ public class MusicComposer {
                         }
                         printWriter.close();
                     }
-                    Thread thread = new Thread(() -> {
-                        screen.putString(1, 1, "●", Terminal.Color.GREEN, Terminal.Color.BLACK,
-                                ScreenCharacterStyle.Bold);
-                        screen.refresh();
-                        try {
-                            Thread.sleep(700);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        put(1, 1, " ");
-                        screen.refresh();
-                    });
-                    thread.start();
                     break;
                 default:
                     break;
@@ -495,6 +484,7 @@ public class MusicComposer {
                     screen.refresh();
                     break;
                 case Enter:
+                    saveThread();
                     PrintWriter toFile = new PrintWriter(fname);
                     for (Note note : track) {
                         toFile.println(Integer.toString(note.getNumber()));
@@ -615,5 +605,21 @@ public class MusicComposer {
             put(12, i + 10, "                     ");
         }
         displayTracks(tracks);
+    }
+
+    public static void saveThread() {
+        Thread thread = new Thread(() -> {
+            screen.putString(1, 1, "●", Terminal.Color.GREEN, Terminal.Color.BLACK,
+                    ScreenCharacterStyle.Bold);
+            screen.refresh();
+            try {
+                Thread.sleep(700);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            put(1, 1, " ");
+            screen.refresh();
+        });
+        thread.start();
     }
 }
