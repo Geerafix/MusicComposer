@@ -5,9 +5,11 @@ import com.googlecode.lanterna.*;
 import com.googlecode.lanterna.input.*;
 import com.googlecode.lanterna.screen.*;
 import com.googlecode.lanterna.terminal.*;
+import com.googlecode.lanterna.terminal.swing.SwingTerminal;
 
 public class MusicComposer {
-    private static Screen screen = TerminalFacade.createScreen();
+    private static SwingTerminal st = new SwingTerminal(100, 41);
+    private static Screen screen = TerminalFacade.createScreen(st);
     private static int[] notes = {
             0, 24, 25, 26, 27, 28, 29, 30, 31, 32,
             33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
@@ -30,7 +32,7 @@ public class MusicComposer {
 
         screen.clear();
         reader(new Scanner(new File("scenes/title.txt")), 10, 0);
-        put(80, 28, "by Adam Grzeszczuk");
+        put(80, 39, "by Adam Grzeszczuk");
         screen.refresh();
 
         while (run) {
@@ -118,7 +120,7 @@ public class MusicComposer {
                     screen.refresh();
                     break;
                 case Tab:
-                    if (position == track.size() && track.size() < 50) {
+                    if (position == track.size() && track.size() < 70) {
                         track.add(new Note(notes[currentNote], currentDuration));
                         position += 1;
                         currentNote = 1;
@@ -216,7 +218,7 @@ public class MusicComposer {
                     screen.refresh();
                     break;
                 case Enter:
-                    if (Arrays.asList(new File("tracks").listFiles()).size() < 15) {
+                    if (Arrays.asList(new File("tracks").listFiles()).size() < 25) {
                         FileWriter fileWriter = new FileWriter("tracks/" + filename.toString() + ".txt");
                         PrintWriter printWriter = new PrintWriter(fileWriter);
                         for (Note note : track) {
@@ -225,6 +227,19 @@ public class MusicComposer {
                         }
                         printWriter.close();
                     }
+                    Thread thread = new Thread(() -> {
+                        screen.putString(1, 1, "●", Terminal.Color.GREEN, Terminal.Color.BLACK,
+                                ScreenCharacterStyle.Bold);
+                        screen.refresh();
+                        try {
+                            Thread.sleep(700);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        put(1, 1, " ");
+                        screen.refresh();
+                    });
+                    thread.start();
                     break;
                 default:
                     break;
@@ -238,6 +253,7 @@ public class MusicComposer {
         MidiChannel[] channels = synth.getChannels();
         int channel = 0, select = 0, y = 0;
         boolean run = true;
+        boolean[] threadRun = { false };
 
         screen.clear();
         synth.open();
@@ -286,21 +302,32 @@ public class MusicComposer {
                     screen.refresh();
                     break;
                 case Enter:
-                    Scanner loadTrack = new Scanner(new File(tracksList.get(select).toString()));
-                    StringBuilder content = new StringBuilder("");
+                    if (threadRun[0] == false && !tracksList.isEmpty()) {
+                        threadRun[0] = true;
+                        Scanner loadTrack = new Scanner(new File(tracksList.get(select).toString()));
+                        StringBuilder content = new StringBuilder("");
 
-                    while (loadTrack.hasNextLine()) {
-                        content.append(loadTrack.nextLine() + "\n");
-                    }
+                        while (loadTrack.hasNextLine()) {
+                            content.append(loadTrack.nextLine() + "\n");
+                        }
 
-                    Scanner trackInterpreter = new Scanner(content.toString());
-
-                    while (trackInterpreter.hasNextLine()) {
-                        int note = Integer.parseInt(trackInterpreter.nextLine());
-                        int dur = Integer.parseInt(trackInterpreter.nextLine());
-                        channels[channel].noteOn(note, 100);
-                        Thread.sleep(dur);
-                        channels[channel].noteOff(note);
+                        Scanner trackInterpreter = new Scanner(content.toString());
+                        Thread thread = new Thread(() -> {
+                            try {
+                                while (trackInterpreter.hasNextLine()) {
+                                    int note = Integer.parseInt(trackInterpreter.nextLine());
+                                    int dur = Integer.parseInt(trackInterpreter.nextLine());
+                                    channels[channel].noteOn(note, 100);
+                                    Thread.sleep(dur);
+                                    channels[channel].noteOff(note);
+                                }
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } finally {
+                                threadRun[0] = false;
+                            }
+                        });
+                        thread.start();
                     }
                     break;
                 case Insert:
@@ -319,7 +346,7 @@ public class MusicComposer {
                         }
                         if (tracksList.size() > 0) {
                             screen.putString(12, select + 10, ">",
-                                Terminal.Color.GREEN, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                                    Terminal.Color.GREEN, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
                         } else {
                             put(12, select + 10, " ");
                         }
@@ -338,8 +365,7 @@ public class MusicComposer {
         Synthesizer synth = MidiSystem.getSynthesizer();
         MidiChannel[] channels = synth.getChannels();
         int channel = 0, currentNote = track.get(0).getNumber() - 23, currentDuration = track.get(0).getDuration(),
-                position = 0,
-                y = 0, trackX = 75, trackY = 4;
+                position = 0, y = 0, trackX = 75, trackY = 4;
 
         synth.open();
         screen.clear();
@@ -396,7 +422,7 @@ public class MusicComposer {
                     screen.refresh();
                     break;
                 case Tab:
-                    if (position == track.size() && track.size() < 50) {
+                    if (position == track.size() && track.size() < 70) {
                         track.add(new Note(notes[currentNote], currentDuration));
                         position += 1;
                         currentNote = 1;
@@ -540,11 +566,11 @@ public class MusicComposer {
     }
 
     public static void refreshTrack(int trackX, int trackY, ArrayList<Note> track) {
-        for (int y = 0; y < 25; y++) {
+        for (int y = 0; y < 35; y++) {
             put(75, y + 4, "                               ");
         }
         for (int i = 0; i < track.size(); i++) {
-            if (trackY == 29) {
+            if (trackY == 39) {
                 trackX += 13;
                 trackY = 4;
             }
