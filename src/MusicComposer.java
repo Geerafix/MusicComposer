@@ -10,6 +10,7 @@ import com.googlecode.lanterna.terminal.swing.SwingTerminal;
 public class MusicComposer {
     private static SwingTerminal st = new SwingTerminal(100, 41);
     private static Screen screen = TerminalFacade.createScreen(st);
+    private static boolean[] threadRun = { false };
     private static int[] notes = {
             0, 24, 25, 26, 27, 28, 29, 30, 31, 32,
             33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
@@ -242,7 +243,6 @@ public class MusicComposer {
         MidiChannel[] channels = synth.getChannels();
         int channel = 0, select = 0, y = 0;
         boolean run = true;
-        boolean[] threadRun = { false };
 
         screen.clear();
         synth.open();
