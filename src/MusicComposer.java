@@ -216,13 +216,15 @@ public class MusicComposer {
                     screen.refresh();
                     break;
                 case Enter:
-                    FileWriter fileWriter = new FileWriter("tracks/" + filename.toString() + ".txt");
-                    PrintWriter printWriter = new PrintWriter(fileWriter);
-                    for (Note note : track) {
-                        printWriter.println(Integer.toString(note.getNumber()));
-                        printWriter.println(Integer.toString(note.getDuration()));
+                    if (Arrays.asList(new File("tracks").listFiles()).size() < 15) {
+                        FileWriter fileWriter = new FileWriter("tracks/" + filename.toString() + ".txt");
+                        PrintWriter printWriter = new PrintWriter(fileWriter);
+                        for (Note note : track) {
+                            printWriter.println(Integer.toString(note.getNumber()));
+                            printWriter.println(Integer.toString(note.getDuration()));
+                        }
+                        printWriter.close();
                     }
-                    printWriter.close();
                     break;
                 default:
                     break;
@@ -241,8 +243,10 @@ public class MusicComposer {
         synth.open();
         reader(new Scanner(new File("scenes/tracks.txt")), 11, y);
         displayTracks(tracksList);
-        screen.putString(12, select + 10, ">",
-                Terminal.Color.GREEN, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+        if (tracksList.size() > 0) {
+            screen.putString(12, select + 10, ">",
+                    Terminal.Color.GREEN, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+        }
         screen.refresh();
 
         while (run) {
@@ -262,8 +266,10 @@ public class MusicComposer {
                     } else {
                         --select;
                     }
-                    screen.putString(12, select + 10, ">",
-                            Terminal.Color.GREEN, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                    if (tracksList.size() > 0) {
+                        screen.putString(12, select + 10, ">",
+                                Terminal.Color.GREEN, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                    }
                     screen.refresh();
                     break;
                 case ArrowDown:
@@ -273,8 +279,10 @@ public class MusicComposer {
                     } else {
                         ++select;
                     }
-                    screen.putString(12, select + 10, ">",
-                            Terminal.Color.GREEN, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                    if (tracksList.size() > 0) {
+                        screen.putString(12, select + 10, ">",
+                                Terminal.Color.GREEN, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                    }
                     screen.refresh();
                     break;
                 case Enter:
@@ -296,20 +304,27 @@ public class MusicComposer {
                     }
                     break;
                 case Insert:
-                    edit(toList(tracksList.get(select).getName()), "tracks/" + tracksList.get(select).getName());
-                    break;
-                case Delete :
-                    tracksList.get(select).delete();
-                    tracksList = Arrays.asList(new File("tracks").listFiles());
-                    for (File f : tracksList) {
-                        System.out.println(f.toPath());
+                    if (!tracksList.isEmpty()) {
+                        edit(toList(tracksList.get(select).getName()), "tracks/" + tracksList.get(select).getName());
                     }
-                    refreshTracks(tracksList);
-                    put(12, select + 10, " ");
-                    select = 0;
-                    screen.putString(12, select + 10, ">",
-                            Terminal.Color.GREEN, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
-                    screen.refresh();
+                    break;
+                case Delete:
+                    if (!tracksList.isEmpty()) {
+                        tracksList.get(select).delete();
+                        tracksList = Arrays.asList(new File("tracks").listFiles());
+                        refreshTracks(tracksList);
+                        put(12, select + 10, " ");
+                        if (select > 0) {
+                            select -= 1;
+                        }
+                        if (tracksList.size() > 0) {
+                            screen.putString(12, select + 10, ">",
+                                Terminal.Color.GREEN, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+                        } else {
+                            put(12, select + 10, " ");
+                        }
+                        screen.refresh();
+                    }
                     break;
                 default:
                     break;
@@ -564,12 +579,13 @@ public class MusicComposer {
 
     public static void displayTracks(List<File> tracks) {
         for (int trackNr = 0; trackNr < tracks.size(); trackNr++) {
-            put(14, trackNr + 10, trackNr + 1 + ". " + tracks.get(trackNr).getName().substring(0, tracks.get(trackNr).getName().length() - 4));
+            put(14, trackNr + 10, trackNr + 1 + ". "
+                    + tracks.get(trackNr).getName().substring(0, tracks.get(trackNr).getName().length() - 4));
         }
     }
 
     public static void refreshTracks(List<File> tracks) {
-        for (int i = 0 ; i < tracks.size() + 1 ; i++) {
+        for (int i = 0; i < tracks.size() + 1; i++) {
             put(12, i + 10, "                     ");
         }
         displayTracks(tracks);
