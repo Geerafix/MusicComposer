@@ -8,7 +8,7 @@ import com.googlecode.lanterna.terminal.*;
 import com.googlecode.lanterna.terminal.swing.SwingTerminal;
 
 public class MusicComposer {
-    private static SwingTerminal st = new SwingTerminal(100, 41);
+    private static SwingTerminal st = new SwingTerminal(100, 36);
     private static Screen screen = TerminalFacade.createScreen(st);
     private static boolean[] threadRun = { false };
     private static int[] notes = {
@@ -32,8 +32,8 @@ public class MusicComposer {
         boolean run = true;
 
         screen.clear();
-        reader(new Scanner(new File("scenes/title.txt")), 10, 0);
-        put(80, 39, "by Adam Grzeszczuk");
+        readerYellow(new Scanner(new File("scenes/title.txt")), 10, 0);
+        putBlue(80, 34, "by Adam Grzeszczuk");
         screen.refresh();
 
         while (run) {
@@ -70,12 +70,13 @@ public class MusicComposer {
 
         synth.open();
         screen.clear();
-        reader(new Scanner(new File("scenes/compose.txt")), 2, y + 3);
+        readerYellow(new Scanner(new File("scenes/compose.txt")), 2, y + 3);
+        readerWhite(new Scanner(new File("scenes/instructionCompose.txt")), 2, y + 3);
         noteToASCIIArt(noteConv(notes[currentNote]));
         durationToASCIIArt(currentDuration);
-        put(2, 1, "Filename: ");
-        put(70, 1, "Position: " + (position + 1));
-        put(85, 1, "Note count: " + (track.size()));
+        putWhite(2, 1, "Filename: ");
+        putWhite(70, 1, "Position: " + (position + 1));
+        putWhite(85, 1, "Note count: " + (track.size()));
         screen.refresh();
 
         while (run) {
@@ -122,7 +123,7 @@ public class MusicComposer {
                     screen.refresh();
                     break;
                 case Tab:
-                    if (position == track.size() && track.size() < 70) {
+                    if (position == track.size() && track.size() < 60) {
                         track.add(new Note(notes[currentNote], currentDuration));
                         position += 1;
                         currentNote = 1;
@@ -131,8 +132,8 @@ public class MusicComposer {
                         clearDuration();
                         noteToASCIIArt(noteConv(notes[currentNote]));
                         durationToASCIIArt(currentDuration);
-                        put(80, 1, Integer.toString(position + 1));
-                        put(97, 1, Integer.toString(track.size()));
+                        putWhite(80, 1, Integer.toString(position + 1));
+                        putWhite(97, 1, Integer.toString(track.size()));
                     } else if (position < track.size()) {
                         track.set(position, new Note(notes[currentNote], currentDuration));
                     }
@@ -157,8 +158,8 @@ public class MusicComposer {
                         noteToASCIIArt(noteConv(track.get(position).getNumber()));
                         durationToASCIIArt(track.get(position).getDuration());
                     }
-                    put(80, 1, "   ");
-                    put(80, 1, Integer.toString(position + 1));
+                    putWhite(80, 1, "   ");
+                    putWhite(80, 1, Integer.toString(position + 1));
                     screen.refresh();
                     break;
                 case End:
@@ -181,8 +182,8 @@ public class MusicComposer {
                         noteToASCIIArt(noteConv(notes[currentNote]));
                         durationToASCIIArt(currentDuration);
                     }
-                    put(80, 1, "   ");
-                    put(80, 1, Integer.toString(position + 1));
+                    putWhite(80, 1, "   ");
+                    putWhite(80, 1, Integer.toString(position + 1));
                     screen.refresh();
                     break;
                 case Delete:
@@ -195,9 +196,9 @@ public class MusicComposer {
                         clearDuration();
                         noteToASCIIArt(noteConv(notes[currentNote]));
                         durationToASCIIArt(currentDuration);
-                        put(97, 1, "   ");
-                        put(97, 1, Integer.toString(track.size()));
-                        put(80, 1, Integer.toString(position + 1));
+                        putWhite(97, 1, "   ");
+                        putWhite(97, 1, Integer.toString(track.size()));
+                        putWhite(80, 1, Integer.toString(position + 1));
                         refreshTrack(trackX, trackY, track);
                         screen.refresh();
                     }
@@ -205,7 +206,7 @@ public class MusicComposer {
                 case NormalKey:
                     if (lastChar < 27) {
                         filename.append(key.getCharacter());
-                        put(12, 1, filename.toString());
+                        putWhite(12, 1, filename.toString());
                         lastChar++;
                     }
                     screen.refresh();
@@ -213,14 +214,14 @@ public class MusicComposer {
                 case Backspace:
                     if (lastChar > 11) {
                         filename.delete(filename.toString().length() - 1, filename.toString().length());
-                        put(lastChar, 1, " ");
-                        put(12, 1, filename.toString());
+                        putWhite(lastChar, 1, " ");
+                        putWhite(12, 1, filename.toString());
                         lastChar--;
                     }
                     screen.refresh();
                     break;
                 case Enter:
-                    if (Arrays.asList(new File("tracks").listFiles()).size() < 25) {
+                    if (Arrays.asList(new File("tracks").listFiles()).size() < 19) {
                         saveThread();
                         FileWriter fileWriter = new FileWriter("tracks/" + filename.toString() + ".txt");
                         PrintWriter printWriter = new PrintWriter(fileWriter);
@@ -246,7 +247,8 @@ public class MusicComposer {
 
         screen.clear();
         synth.open();
-        reader(new Scanner(new File("scenes/tracks.txt")), 11, y);
+        readerYellow(new Scanner(new File("scenes/tracks.txt")), 11, y);
+        readerWhite(new Scanner(new File("scenes/instructionTracks.txt")), 65, y);
         displayTracks(tracksList);
         if (tracksList.size() > 0) {
             screen.putString(12, select + 10, ">",
@@ -265,7 +267,7 @@ public class MusicComposer {
                     title();
                     break;
                 case ArrowUp:
-                    put(12, select + 10, " ");
+                    putWhite(12, select + 10, " ");
                     if (select == 0) {
                         select = tracksList.size() - 1;
                     } else {
@@ -278,7 +280,7 @@ public class MusicComposer {
                     screen.refresh();
                     break;
                 case ArrowDown:
-                    put(12, select + 10, " ");
+                    putWhite(12, select + 10, " ");
                     if (select == tracksList.size() - 1) {
                         select = 0;
                     } else {
@@ -329,7 +331,7 @@ public class MusicComposer {
                         tracksList.get(select).delete();
                         tracksList = Arrays.asList(new File("tracks").listFiles());
                         refreshTracks(tracksList);
-                        put(12, select + 10, " ");
+                        putWhite(12, select + 10, " ");
                         if (select > 0) {
                             select -= 1;
                         }
@@ -337,7 +339,7 @@ public class MusicComposer {
                             screen.putString(12, select + 10, ">",
                                     Terminal.Color.GREEN, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
                         } else {
-                            put(12, select + 10, " ");
+                            putWhite(12, select + 10, " ");
                         }
                         screen.refresh();
                     }
@@ -358,13 +360,14 @@ public class MusicComposer {
 
         synth.open();
         screen.clear();
-        reader(new Scanner(new File("scenes/edit.txt")), 2, y + 3);
+        readerYellow(new Scanner(new File("scenes/edit.txt")), 2, y + 3);
+        readerWhite(new Scanner(new File("scenes/instructionEdit.txt")), 2, y + 3);
         refreshTrack(trackX, trackY, track);
         noteToASCIIArt(noteConv(track.get(0).getNumber()));
         durationToASCIIArt(track.get(0).getDuration());
-        put(2, 1, "Filename: " + fname.substring(7, fname.length() - 4));
-        put(70, 1, "Position: " + (position + 1));
-        put(85, 1, "Note count: " + (track.size()));
+        putWhite(2, 1, "Filename: " + fname.substring(7, fname.length() - 4));
+        putWhite(70, 1, "Position: " + (position + 1));
+        putWhite(85, 1, "Note count: " + (track.size()));
         screen.refresh();
 
         while (run) {
@@ -411,7 +414,7 @@ public class MusicComposer {
                     screen.refresh();
                     break;
                 case Tab:
-                    if (position == track.size() && track.size() < 70) {
+                    if (position == track.size() && track.size() < 60) {
                         track.add(new Note(notes[currentNote], currentDuration));
                         position += 1;
                         currentNote = 1;
@@ -420,8 +423,8 @@ public class MusicComposer {
                         clearDuration();
                         noteToASCIIArt(noteConv(notes[currentNote]));
                         durationToASCIIArt(currentDuration);
-                        put(80, 1, Integer.toString(position + 1));
-                        put(97, 1, Integer.toString(track.size()));
+                        putWhite(80, 1, Integer.toString(position + 1));
+                        putWhite(97, 1, Integer.toString(track.size()));
                     } else if (position < track.size()) {
                         track.set(position, new Note(notes[currentNote], currentDuration));
                     }
@@ -438,9 +441,9 @@ public class MusicComposer {
                         clearDuration();
                         noteToASCIIArt(noteConv(notes[currentNote]));
                         durationToASCIIArt(currentDuration);
-                        put(97, 1, "   ");
-                        put(97, 1, Integer.toString(track.size()));
-                        put(80, 1, Integer.toString(position + 1));
+                        putWhite(97, 1, "   ");
+                        putWhite(97, 1, Integer.toString(track.size()));
+                        putWhite(80, 1, Integer.toString(position + 1));
                         refreshTrack(trackX, trackY, track);
                         screen.refresh();
                     }
@@ -454,8 +457,8 @@ public class MusicComposer {
                         clearDuration();
                         noteToASCIIArt(noteConv(track.get(position).getNumber()));
                         durationToASCIIArt(track.get(position).getDuration());
-                        put(80, 1, "   ");
-                        put(80, 1, Integer.toString(position + 1));
+                        putWhite(80, 1, "   ");
+                        putWhite(80, 1, Integer.toString(position + 1));
                     }
                     screen.refresh();
                     break;
@@ -479,8 +482,8 @@ public class MusicComposer {
                         noteToASCIIArt(noteConv(notes[currentNote]));
                         durationToASCIIArt(currentDuration);
                     }
-                    put(80, 1, "   ");
-                    put(80, 1, Integer.toString(position + 1));
+                    putWhite(80, 1, "   ");
+                    putWhite(80, 1, Integer.toString(position + 1));
                     screen.refresh();
                     break;
                 case Enter:
@@ -521,7 +524,7 @@ public class MusicComposer {
         int x = 3, y = 12;
         for (char digit : note.toCharArray()) {
             scan = new Scanner(new File("characters/" + digit + ".txt"));
-            reader(scan, x, y);
+            readerWhite(scan, x, y);
             x = x + 9;
             screen.refresh();
         }
@@ -533,7 +536,7 @@ public class MusicComposer {
         int x = 34, y = 12;
         for (char digit : note.toCharArray()) {
             scan = new Scanner(new File("characters/" + digit + ".txt"));
-            reader(scan, x, y);
+            readerWhite(scan, x, y);
             screen.refresh();
             x = x + 9;
         }
@@ -542,7 +545,7 @@ public class MusicComposer {
     private static void clearNote() {
         int x = 3, y = 12;
         while (y < 17) {
-            put(x, y, "                           ");
+            putWhite(x, y, "                           ");
             y++;
         }
     }
@@ -550,23 +553,23 @@ public class MusicComposer {
     private static void clearDuration() {
         int x = 34, y = 12;
         while (y < 17) {
-            put(x, y, "                                   ");
+            putWhite(x, y, "                                   ");
             y++;
         }
     }
 
     public static void refreshTrack(int trackX, int trackY, ArrayList<Note> track) {
-        for (int y = 0; y < 35; y++) {
-            put(75, y + 4, "                               ");
+        for (int y = 0; y < 30; y++) {
+            putWhite(75, y + 4, "                               ");
         }
         for (int i = 0; i < track.size(); i++) {
-            if (trackY == 39) {
+            if (trackY == 34) {
                 trackX += 13;
                 trackY = 4;
             }
-            put(trackX, trackY, (i + 1) + ". ");
-            put((trackX + 3), trackY, noteConv(track.get(i).getNumber()));
-            put((trackX + 7), trackY, Integer.toString(track.get(i).getDuration()));
+            putWhite(trackX, trackY, (i + 1) + ". ");
+            putWhite((trackX + 3), trackY, noteConv(track.get(i).getNumber()));
+            putWhite((trackX + 7), trackY, Integer.toString(track.get(i).getDuration()));
             trackY += 1;
         }
     }
@@ -580,29 +583,47 @@ public class MusicComposer {
         return track;
     }
 
-    public static void reader(Scanner scan, int x, int y) {
+    public static void readerYellow(Scanner scan, int x, int y) {
         while (scan.hasNext()) {
             String part = scan.nextLine();
-            put(x, y, part);
+            putYellow(x, y, part);
             y++;
         }
     }
 
-    public static void put(int x, int y, String text) {
+    public static void readerWhite(Scanner scan, int x, int y) {
+        while (scan.hasNext()) {
+            String part = scan.nextLine();
+            putWhite(x, y, part);
+            y++;
+        }
+    }
+
+    public static void putWhite(int x, int y, String text) {
         screen.putString(x, y, text,
                 Terminal.Color.WHITE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
     }
 
+    public static void putBlue(int x, int y, String text) {
+        screen.putString(x, y, text,
+                Terminal.Color.BLUE, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+    }
+
+    public static void putYellow(int x, int y, String text) {
+        screen.putString(x, y, text,
+                Terminal.Color.YELLOW, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
+    }
+
     public static void displayTracks(List<File> tracks) {
         for (int trackNr = 0; trackNr < tracks.size(); trackNr++) {
-            put(14, trackNr + 10, trackNr + 1 + ". "
+            putWhite(14, trackNr + 10, trackNr + 1 + ". "
                     + tracks.get(trackNr).getName().substring(0, tracks.get(trackNr).getName().length() - 4));
         }
     }
 
     public static void refreshTracks(List<File> tracks) {
         for (int i = 0; i < tracks.size() + 1; i++) {
-            put(12, i + 10, "                     ");
+            putWhite(12, i + 10, "                     ");
         }
         displayTracks(tracks);
     }
@@ -617,7 +638,7 @@ public class MusicComposer {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            put(1, 1, " ");
+            putWhite(1, 1, " ");
             screen.refresh();
         });
         thread.start();

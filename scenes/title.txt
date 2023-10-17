@@ -15,9 +15,9 @@
            .;;............ ..                    .. ............;;.
          .;;;;: Tracks :::..                      ..::: Compose ;;;;.
           ':;;:::::::::::: . .                  . . ::::::::::::;;:'
-            ':  (ArrowLeft)                       (ArrowRight)  :'
+            ':  ArrowLeft                           ArrowRight  :'
                                    .------.
                                   (  Exit  )
                                   |`------'|
                                    '------'
-                                   (Escape)
+                                    Escape

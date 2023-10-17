@@ -23,15 +23,10 @@
   ':::::'                        ':::::'                               |
     ':`                            ':`                                 |
                                                                        |
-                                                                       |   
-ArrowUp, ArrowDown  >  change note                                     |
+                                                                       |                                                                       
+                                                                       |                                                                       
+                                                                       |                                                                           
+                                                                       |                                                                           
+                                                                       |                                                                     
                                                                        |
- PageUp, PageDown   >  change duration (in miliseconds)                |
-                                                                       |
-      Insert        >  play note                                       |
-                                                                       |    
-    Home, End       >  change note to edit                             |
-                                                                       |    
-       Tab          >  save new/edited note                            |
-                                                                       |
-      Enter         >  save track to file                              '-----------------------------------
+                                                                       '-----------------------------------

@@ -1,0 +1,32 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ArrowUp | ArrowDown  >  change note                     
+ PageUp | PageDown   >  change duration (in miliseconds)
+   Home | End        >  change note to edit 
+      Insert         >  play note           
+       Tab           >  save new/edited note
+      Enter          >  save track to file
+      Escape         >  track menu
