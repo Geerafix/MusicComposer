@@ -123,8 +123,13 @@ public class Compose {
                 case Home:
                     if (position > 0) {
                         position -= 1;
-                        currentNote = track.get(position).getNumber() - 23;
-                        currentDuration = track.get(position).getDuration();
+                        if (track.get(position).getNumber() == 0) {
+                            currentNote = 0;
+                            currentDuration = track.get(position).getDuration();
+                        } else {
+                            currentNote = track.get(position).getNumber() - 23;
+                            currentDuration = track.get(0).getDuration();
+                        }
                         sm.clearNote();
                         sm.clearDuration();
                         sm.noteToASCIIArt(sm.noteConv(track.get(position).getNumber()));
@@ -139,8 +144,13 @@ public class Compose {
                         position += 1;
                     }
                     if (position < track.size()) {
-                        currentNote = track.get(position).getNumber() - 23;
-                        currentDuration = track.get(position).getDuration();
+                        if (track.get(position).getNumber() == 0) {
+                            currentNote = 0;
+                            currentDuration = track.get(position).getDuration();
+                        } else {
+                            currentNote = track.get(position).getNumber() - 23;
+                            currentDuration = track.get(0).getDuration();
+                        }
                         sm.clearNote();
                         sm.clearDuration();
                         sm.noteToASCIIArt(sm.noteConv(track.get(position).getNumber()));
