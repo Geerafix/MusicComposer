@@ -94,6 +94,7 @@ public class MusicComposer {
                     }
                     clearNote();
                     noteToASCIIArt(noteConv(notes[currentNote]));
+                    selectNoteDown(2, 18);
                     screen.refresh();
                     break;
                 case ArrowUp:
@@ -104,6 +105,7 @@ public class MusicComposer {
                     }
                     clearNote();
                     noteToASCIIArt(noteConv(notes[currentNote]));
+                    selectNoteUp(2, 4);
                     screen.refresh();
                     break;
                 case PageUp:
@@ -112,6 +114,7 @@ public class MusicComposer {
                     }
                     clearDuration();
                     durationToASCIIArt(currentDuration);
+                    selectNoteUp(33, 4);
                     screen.refresh();
                     break;
                 case PageDown:
@@ -120,6 +123,7 @@ public class MusicComposer {
                     }
                     clearDuration();
                     durationToASCIIArt(currentDuration);
+                    selectNoteDown(33, 18);
                     screen.refresh();
                     break;
                 case Tab:
@@ -231,6 +235,169 @@ public class MusicComposer {
                         }
                         printWriter.close();
                     }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    public static void edit(ArrayList<Note> track, String fname)
+            throws FileNotFoundException, IOException, MidiUnavailableException, InterruptedException {
+        boolean run = true;
+        Synthesizer synth = MidiSystem.getSynthesizer();
+        MidiChannel[] channels = synth.getChannels();
+        int channel = 0, currentNote = track.get(0).getNumber() - 23, currentDuration = track.get(0).getDuration(),
+                position = 0, y = 0, trackX = 75, trackY = 4;
+
+        synth.open();
+        screen.clear();
+        readerYellow(new Scanner(new File("scenes/edit.txt")), 2, y + 3);
+        readerWhite(new Scanner(new File("scenes/instructionEdit.txt")), 2, y + 3);
+        refreshTrack(trackX, trackY, track);
+        noteToASCIIArt(noteConv(track.get(0).getNumber()));
+        durationToASCIIArt(track.get(0).getDuration());
+        putWhite(2, 1, "Filename: " + fname.substring(7, fname.length() - 4));
+        putWhite(70, 1, "Position: " + (position + 1));
+        putWhite(85, 1, "Note count: " + (track.size()));
+        screen.refresh();
+
+        while (run) {
+            Key key = screen.readInput();
+            while (key == null) {
+                key = screen.readInput();
+            }
+
+            switch (key.getKind()) {
+                case ArrowDown:
+                    if (currentNote == 0) {
+                        currentNote = notes.length - 1;
+                    } else {
+                        --currentNote;
+                    }
+                    clearNote();
+                    noteToASCIIArt(noteConv(notes[currentNote]));
+                    selectNoteDown(2, 18);
+                    screen.refresh();
+                    break;
+                case ArrowUp:
+                    if (currentNote == notes.length - 1) {
+                        currentNote = 0;
+                    } else {
+                        ++currentNote;
+                    }
+                    clearNote();
+                    noteToASCIIArt(noteConv(notes[currentNote]));
+                    selectNoteUp(2, 4);
+                    screen.refresh();
+                    break;
+                case PageUp:
+                    if (currentDuration != 5000) {
+                        currentDuration += 50;
+                    }
+                    clearDuration();
+                    durationToASCIIArt(currentDuration);
+                    selectNoteUp(33, 4);
+                    screen.refresh();
+                    break;
+                case PageDown:
+                    if (currentDuration != 0) {
+                        currentDuration -= 50;
+                    }
+                    clearDuration();
+                    durationToASCIIArt(currentDuration);
+                    selectNoteDown(33, 18);
+                    screen.refresh();
+                    break;
+                case Tab:
+                    if (position == track.size() && track.size() < 60) {
+                        track.add(new Note(notes[currentNote], currentDuration));
+                        position += 1;
+                        currentNote = 1;
+                        currentDuration = 500;
+                        clearNote();
+                        clearDuration();
+                        noteToASCIIArt(noteConv(notes[currentNote]));
+                        durationToASCIIArt(currentDuration);
+                        putWhite(80, 1, Integer.toString(position + 1));
+                        putWhite(97, 1, Integer.toString(track.size()));
+                    } else if (position < track.size()) {
+                        track.set(position, new Note(notes[currentNote], currentDuration));
+                    }
+                    refreshTrack(trackX, trackY, track);
+                    screen.refresh();
+                    break;
+                case Delete:
+                    if (position < track.size()) {
+                        track.remove(position);
+                        currentNote = 1;
+                        currentDuration = 500;
+                        position = track.size();
+                        clearNote();
+                        clearDuration();
+                        noteToASCIIArt(noteConv(notes[currentNote]));
+                        durationToASCIIArt(currentDuration);
+                        putWhite(97, 1, "   ");
+                        putWhite(97, 1, Integer.toString(track.size()));
+                        putWhite(80, 1, Integer.toString(position + 1));
+                        refreshTrack(trackX, trackY, track);
+                        screen.refresh();
+                    }
+                    break;
+                case Home:
+                    if (position > 0) {
+                        position -= 1;
+                        currentNote = track.get(position).getNumber() - 23;
+                        currentDuration = track.get(position).getDuration();
+                        clearNote();
+                        clearDuration();
+                        noteToASCIIArt(noteConv(track.get(position).getNumber()));
+                        durationToASCIIArt(track.get(position).getDuration());
+                        putWhite(80, 1, "   ");
+                        putWhite(80, 1, Integer.toString(position + 1));
+                    }
+                    screen.refresh();
+                    break;
+                case End:
+                    if (position < track.size()) {
+                        position += 1;
+                    }
+                    if (position < track.size()) {
+                        currentNote = track.get(position).getNumber() - 23;
+                        currentDuration = track.get(position).getDuration();
+                        clearNote();
+                        clearDuration();
+                        noteToASCIIArt(noteConv(track.get(position).getNumber()));
+                        durationToASCIIArt(track.get(position).getDuration());
+                    }
+                    if (position == track.size()) {
+                        currentNote = 1;
+                        currentDuration = 500;
+                        clearNote();
+                        clearDuration();
+                        noteToASCIIArt(noteConv(notes[currentNote]));
+                        durationToASCIIArt(currentDuration);
+                    }
+                    putWhite(80, 1, "   ");
+                    putWhite(80, 1, Integer.toString(position + 1));
+                    screen.refresh();
+                    break;
+                case Enter:
+                    saveThread();
+                    PrintWriter toFile = new PrintWriter(fname);
+                    for (Note note : track) {
+                        toFile.println(Integer.toString(note.getNumber()));
+                        toFile.println(Integer.toString(note.getDuration()));
+                    }
+                    toFile.close();
+                    break;
+                case Insert:
+                    channels[channel].noteOn(notes[currentNote], 100);
+                    Thread.sleep(currentDuration);
+                    channels[channel].noteOff(notes[currentNote]);
+                    break;
+                case Escape:
+                    tracks();
                     break;
                 default:
                     break;
@@ -350,163 +517,29 @@ public class MusicComposer {
         }
     }
 
-    public static void edit(ArrayList<Note> track, String fname)
-            throws FileNotFoundException, IOException, MidiUnavailableException, InterruptedException {
-        boolean run = true;
-        Synthesizer synth = MidiSystem.getSynthesizer();
-        MidiChannel[] channels = synth.getChannels();
-        int channel = 0, currentNote = track.get(0).getNumber() - 23, currentDuration = track.get(0).getDuration(),
-                position = 0, y = 0, trackX = 75, trackY = 4;
-
-        synth.open();
-        screen.clear();
-        readerYellow(new Scanner(new File("scenes/edit.txt")), 2, y + 3);
-        readerWhite(new Scanner(new File("scenes/instructionEdit.txt")), 2, y + 3);
-        refreshTrack(trackX, trackY, track);
-        noteToASCIIArt(noteConv(track.get(0).getNumber()));
-        durationToASCIIArt(track.get(0).getDuration());
-        putWhite(2, 1, "Filename: " + fname.substring(7, fname.length() - 4));
-        putWhite(70, 1, "Position: " + (position + 1));
-        putWhite(85, 1, "Note count: " + (track.size()));
-        screen.refresh();
-
-        while (run) {
-            Key key = screen.readInput();
-            while (key == null) {
-                key = screen.readInput();
+    public static void saveThread() {
+        Thread thread = new Thread(() -> {
+            screen.putString(1, 1, "●", Terminal.Color.GREEN, Terminal.Color.BLACK,
+                    ScreenCharacterStyle.Bold);
+            screen.refresh();
+            try {
+                Thread.sleep(700);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            putWhite(1, 1, " ");
+            screen.refresh();
+        });
+        thread.start();
+    }
 
-            switch (key.getKind()) {
-                case ArrowDown:
-                    if (currentNote == 0) {
-                        currentNote = notes.length - 1;
-                    } else {
-                        --currentNote;
-                    }
-                    clearNote();
-                    noteToASCIIArt(noteConv(notes[currentNote]));
-                    screen.refresh();
-                    break;
-                case ArrowUp:
-                    if (currentNote == notes.length - 1) {
-                        currentNote = 0;
-                    } else {
-                        ++currentNote;
-                    }
-                    clearNote();
-                    noteToASCIIArt(noteConv(notes[currentNote]));
-                    screen.refresh();
-                    break;
-                case PageUp:
-                    if (currentDuration != 5000) {
-                        currentDuration += 50;
-                    }
-                    clearDuration();
-                    durationToASCIIArt(currentDuration);
-                    screen.refresh();
-                    break;
-                case PageDown:
-                    if (currentDuration != 0) {
-                        currentDuration -= 50;
-                    }
-                    clearDuration();
-                    durationToASCIIArt(currentDuration);
-                    screen.refresh();
-                    break;
-                case Tab:
-                    if (position == track.size() && track.size() < 60) {
-                        track.add(new Note(notes[currentNote], currentDuration));
-                        position += 1;
-                        currentNote = 1;
-                        currentDuration = 500;
-                        clearNote();
-                        clearDuration();
-                        noteToASCIIArt(noteConv(notes[currentNote]));
-                        durationToASCIIArt(currentDuration);
-                        putWhite(80, 1, Integer.toString(position + 1));
-                        putWhite(97, 1, Integer.toString(track.size()));
-                    } else if (position < track.size()) {
-                        track.set(position, new Note(notes[currentNote], currentDuration));
-                    }
-                    refreshTrack(trackX, trackY, track);
-                    screen.refresh();
-                    break;
-                case Delete:
-                    if (position < track.size()) {
-                        track.remove(position);
-                        currentNote = 1;
-                        currentDuration = 500;
-                        position = track.size();
-                        clearNote();
-                        clearDuration();
-                        noteToASCIIArt(noteConv(notes[currentNote]));
-                        durationToASCIIArt(currentDuration);
-                        putWhite(97, 1, "   ");
-                        putWhite(97, 1, Integer.toString(track.size()));
-                        putWhite(80, 1, Integer.toString(position + 1));
-                        refreshTrack(trackX, trackY, track);
-                        screen.refresh();
-                    }
-                    break;
-                case Home:
-                    if (position > 0) {
-                        position -= 1;
-                        currentNote = track.get(position).getNumber() - 23;
-                        currentDuration = track.get(position).getDuration();
-                        clearNote();
-                        clearDuration();
-                        noteToASCIIArt(noteConv(track.get(position).getNumber()));
-                        durationToASCIIArt(track.get(position).getDuration());
-                        putWhite(80, 1, "   ");
-                        putWhite(80, 1, Integer.toString(position + 1));
-                    }
-                    screen.refresh();
-                    break;
-                case End:
-                    if (position < track.size()) {
-                        position += 1;
-                    }
-                    if (position < track.size()) {
-                        currentNote = track.get(position).getNumber() - 23;
-                        currentDuration = track.get(position).getDuration();
-                        clearNote();
-                        clearDuration();
-                        noteToASCIIArt(noteConv(track.get(position).getNumber()));
-                        durationToASCIIArt(track.get(position).getDuration());
-                    }
-                    if (position == track.size()) {
-                        currentNote = 1;
-                        currentDuration = 500;
-                        clearNote();
-                        clearDuration();
-                        noteToASCIIArt(noteConv(notes[currentNote]));
-                        durationToASCIIArt(currentDuration);
-                    }
-                    putWhite(80, 1, "   ");
-                    putWhite(80, 1, Integer.toString(position + 1));
-                    screen.refresh();
-                    break;
-                case Enter:
-                    saveThread();
-                    PrintWriter toFile = new PrintWriter(fname);
-                    for (Note note : track) {
-                        toFile.println(Integer.toString(note.getNumber()));
-                        toFile.println(Integer.toString(note.getDuration()));
-                    }
-                    toFile.close();
-                    break;
-                case Insert:
-                    channels[channel].noteOn(notes[currentNote], 100);
-                    Thread.sleep(currentDuration);
-                    channels[channel].noteOff(notes[currentNote]);
-                    break;
-                case Escape:
-                    tracks();
-                    break;
-                default:
-                    break;
-            }
+    public static ArrayList<Note> toList(String filename) throws FileNotFoundException {
+        ArrayList<Note> track = new ArrayList<>();
+        Scanner scan = new Scanner(new File("tracks/" + filename));
+        while (scan.hasNext()) {
+            track.add(new Note(Integer.parseInt(scan.nextLine()), Integer.parseInt(scan.nextLine())));
         }
+        return track;
     }
 
     public static String noteConv(int noteNumber) {
@@ -558,6 +591,13 @@ public class MusicComposer {
         }
     }
 
+    public static void displayTracks(List<File> tracks) {
+        for (int trackNr = 0; trackNr < tracks.size(); trackNr++) {
+            putWhite(14, trackNr + 10, trackNr + 1 + ". "
+                    + tracks.get(trackNr).getName().substring(0, tracks.get(trackNr).getName().length() - 4));
+        }
+    }
+
     public static void refreshTrack(int trackX, int trackY, ArrayList<Note> track) {
         for (int y = 0; y < 30; y++) {
             putWhite(75, y + 4, "                               ");
@@ -574,13 +614,11 @@ public class MusicComposer {
         }
     }
 
-    public static ArrayList<Note> toList(String filename) throws FileNotFoundException {
-        ArrayList<Note> track = new ArrayList<>();
-        Scanner scan = new Scanner(new File("tracks/" + filename));
-        while (scan.hasNext()) {
-            track.add(new Note(Integer.parseInt(scan.nextLine()), Integer.parseInt(scan.nextLine())));
+    public static void refreshTracks(List<File> tracks) {
+        for (int i = 0; i < tracks.size() + 1; i++) {
+            putWhite(12, i + 10, "                     ");
         }
-        return track;
+        displayTracks(tracks);
     }
 
     public static void readerYellow(Scanner scan, int x, int y) {
@@ -614,33 +652,17 @@ public class MusicComposer {
                 Terminal.Color.YELLOW, Terminal.Color.BLACK, ScreenCharacterStyle.Bold);
     }
 
-    public static void displayTracks(List<File> tracks) {
-        for (int trackNr = 0; trackNr < tracks.size(); trackNr++) {
-            putWhite(14, trackNr + 10, trackNr + 1 + ". "
-                    + tracks.get(trackNr).getName().substring(0, tracks.get(trackNr).getName().length() - 4));
-        }
+    public static void selectNoteUp(int x, int y) throws FileNotFoundException, InterruptedException {
+        readerYellow(new Scanner(new File("scenes/glowingUp.txt")), x, y);
+        screen.refresh();
+        Thread.sleep(25);
+        readerYellow(new Scanner(new File("scenes/classicUp.txt")), x, y);
     }
 
-    public static void refreshTracks(List<File> tracks) {
-        for (int i = 0; i < tracks.size() + 1; i++) {
-            putWhite(12, i + 10, "                     ");
-        }
-        displayTracks(tracks);
-    }
-
-    public static void saveThread() {
-        Thread thread = new Thread(() -> {
-            screen.putString(1, 1, "●", Terminal.Color.GREEN, Terminal.Color.BLACK,
-                    ScreenCharacterStyle.Bold);
-            screen.refresh();
-            try {
-                Thread.sleep(700);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            putWhite(1, 1, " ");
-            screen.refresh();
-        });
-        thread.start();
+    public static void selectNoteDown(int x, int y) throws FileNotFoundException, InterruptedException {
+        readerYellow(new Scanner(new File("scenes/glowingDown.txt")), x, y);
+        screen.refresh();
+        Thread.sleep(30);
+        readerYellow(new Scanner(new File("scenes/classicDown.txt")), x, y);
     }
 }

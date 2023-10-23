@@ -1,5 +1,4 @@
 public class Note {
-
      int number;
      int duration;
 
@@ -12,7 +11,6 @@ public class Note {
           return this.number;
      }
 
-     
      public int getDuration() {
           return this.duration;
      }
@@ -20,7 +18,6 @@ public class Note {
      public void setNumber(int number) {
           this.number = number;
      }
-
      
      public void setDuration(int duration) {
           this.duration = duration;
