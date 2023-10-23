@@ -202,6 +202,10 @@ public class Compose {
                             printWriter.println(Integer.toString(note.getDuration()));
                         }
                         printWriter.close();
+                    } else if (Arrays.asList(new File("tracks").listFiles()).size() == 19) {
+                        sm.alert(false);
+                    } else if (track.size() < 3) {
+                        sm.alert(true);
                     }
                     break;
                 default:

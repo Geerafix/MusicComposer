@@ -149,4 +149,36 @@ public class ScreenManipulate {
         });
         thread.start();
     }
+
+    public void alert(boolean bool) {
+        if (bool == true) {
+            Thread thread = new Thread(() -> {
+                screen.putString(36, 1, "Add some notes (min. 3)", Terminal.Color.RED, Terminal.Color.BLACK,
+                        ScreenCharacterStyle.Bold);
+                screen.refresh();
+                try {
+                    Thread.sleep(2800);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                putWhite(36, 1, "                       ");
+                screen.refresh();
+            });
+            thread.start();
+        } else if (bool == false) {
+            Thread thread = new Thread(() -> {
+            screen.putString(39, 1, "Delete some track", Terminal.Color.RED, Terminal.Color.BLACK,
+                    ScreenCharacterStyle.Bold);
+            screen.refresh();
+            try {
+                Thread.sleep(2800);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            putWhite(39, 1, "                 ");
+            screen.refresh();
+        });
+        thread.start();
+        }
+    }
 }
