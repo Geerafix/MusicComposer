@@ -107,8 +107,6 @@ public class Compose {
                     if (position == track.size() && track.size() < 60) {
                         track.add(new Note(notes[currentNote], currentDuration));
                         position += 1;
-                        currentNote = 1;
-                        currentDuration = 500;
                         sm.clearNote();
                         sm.clearDuration();
                         sm.noteToASCIIArt(sm.noteConv(notes[currentNote]));
@@ -132,13 +130,21 @@ public class Compose {
                     title.title();
                     break;
                 case Insert:
-                    if (currentNote > 0) {
-                        channels[channel].noteOn(notes[currentNote], 100);
-                        Thread.sleep(currentDuration);
-                        channels[channel].noteOff(notes[currentNote]);
-                    } else {
-                        Thread.sleep(currentDuration);
-                    }
+                    int[] data = { currentNote, currentDuration };
+                    Thread thread = new Thread(() -> {
+                        try {
+                            if (data[0] > 0) {
+                                channels[channel].noteOn(notes[data[0]], 100);
+                                Thread.sleep(data[1]);
+                                channels[channel].noteOff(notes[data[0]]);
+                            } else {
+                                Thread.sleep(data[0]);
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                    thread.start();
                     break;
                 case Home:
                     if (position > 0) {
@@ -175,14 +181,6 @@ public class Compose {
                         sm.clearDuration();
                         sm.noteToASCIIArt(sm.noteConv(track.get(position).getNumber()));
                         sm.durationToASCIIArt(track.get(position).getDuration());
-                    }
-                    if (position == track.size()) {
-                        currentNote = 1;
-                        currentDuration = 500;
-                        sm.clearNote();
-                        sm.clearDuration();
-                        sm.noteToASCIIArt(sm.noteConv(notes[currentNote]));
-                        sm.durationToASCIIArt(currentDuration);
                     }
                     sm.putWhite(80, 1, "   ");
                     sm.putWhite(80, 1, Integer.toString(position + 1));
