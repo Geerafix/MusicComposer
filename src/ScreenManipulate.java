@@ -23,8 +23,8 @@ public class ScreenManipulate {
         String note = String.valueOf(stream);
         Scanner scan;
         int x = 3, y = 12;
-        for (char digit : note.toCharArray()) {
-            scan = new Scanner(new File("characters/" + digit + ".txt"));
+        for (char ch : note.toCharArray()) {
+            scan = new Scanner(new File("characters/" + ch + ".txt"));
             readerWhite(scan, x, y);
             x = x + 9;
             screen.refresh();
@@ -32,11 +32,11 @@ public class ScreenManipulate {
     }
 
     public void durationToASCIIArt(int stream) throws FileNotFoundException {
-        String note = String.valueOf(stream);
+        String duration = String.valueOf(stream);
         Scanner scan;
         int x = 34, y = 12;
-        for (char digit : note.toCharArray()) {
-            scan = new Scanner(new File("characters/" + digit + ".txt"));
+        for (char ch : duration.toCharArray()) {
+            scan = new Scanner(new File("characters/" + ch + ".txt"));
             readerWhite(scan, x, y);
             screen.refresh();
             x = x + 9;
