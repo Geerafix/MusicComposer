@@ -181,13 +181,17 @@ public class Edit {
                     screen.refresh();
                     break;
                 case Enter:
-                    sm.saveThread();
-                    PrintWriter toFile = new PrintWriter(fname);
-                    for (Note note : track) {
-                        toFile.println(Integer.toString(note.getNumber()));
-                        toFile.println(Integer.toString(note.getDuration()));
+                    if (track.size() > 2) {
+                        sm.saveThread();
+                        PrintWriter toFile = new PrintWriter(fname);
+                        for (Note note : track) {
+                            toFile.println(Integer.toString(note.getNumber()));
+                            toFile.println(Integer.toString(note.getDuration()));
+                        }
+                        toFile.close();
+                    } else {
+                        sm.alert(true);
                     }
-                    toFile.close();
                     break;
                 case Insert:
                     if (currentNote > 0) {

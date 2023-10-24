@@ -28,18 +28,32 @@ public class Compose {
         StringBuilder filename = new StringBuilder("");
         Synthesizer synth = MidiSystem.getSynthesizer();
         MidiChannel[] channels = synth.getChannels();
-        int channel = 0, y = 0, trackX = 75, trackY = 4, position = 0, currentNote = 1, currentDuration = 500, lastChar = 11;
+        int channel = 0, y = 0, trackX = 75, trackY = 4, position = 0, currentNote = 1, currentDuration = 500,
+                lastChar = 11;
         boolean run = true;
 
         synth.open();
         screen.clear();
         sm.readerYellow(new Scanner(new File("scenes/compose.txt")), 2, y + 3);
         sm.readerWhite(new Scanner(new File("scenes/instructionCompose.txt")), 2, y + 3);
-        sm.noteToASCIIArt(sm.noteConv(notes[currentNote]));
-        sm.durationToASCIIArt(currentDuration);
         sm.putWhite(2, 1, "Filename: ");
         sm.putWhite(70, 1, "Position: " + (position + 1));
         sm.putWhite(85, 1, "Note count: " + (track.size()));
+        File tempTrack = new File("characters/tempTrack.txt");
+        if (tempTrack.length() != 0) {
+            track = toList("tempTrack.txt");
+            if (track.get(position).getNumber() == 0) {
+                currentNote = 0;
+                currentDuration = track.get(position).getDuration();
+            } else {
+                currentNote = track.get(position).getNumber() - 23;
+                currentDuration = track.get(position).getDuration();
+            }
+            sm.refreshTrack(trackX, trackY, track);
+            sm.putWhite(97, 1, Integer.toString(track.size()));
+        }
+        sm.noteToASCIIArt(sm.noteConv(notes[currentNote]));
+        sm.durationToASCIIArt(currentDuration);
         screen.refresh();
 
         while (run) {
@@ -109,6 +123,12 @@ public class Compose {
                     break;
                 case Escape:
                     Title title = new Title(screen, sm);
+                    PrintWriter pWriter = new PrintWriter(tempTrack);
+                    for (Note note : track) {
+                        pWriter.println(Integer.toString(note.getNumber()));
+                        pWriter.println(Integer.toString(note.getDuration()));
+                    }
+                    pWriter.close();
                     title.title();
                     break;
                 case Insert:
@@ -211,6 +231,8 @@ public class Compose {
                             printWriter.println(Integer.toString(note.getNumber()));
                             printWriter.println(Integer.toString(note.getDuration()));
                         }
+                        track.clear();
+                        tempTrack.delete();
                         printWriter.close();
                     } else if (Arrays.asList(new File("tracks").listFiles()).size() == 20) {
                         sm.alert(false);
@@ -222,5 +244,14 @@ public class Compose {
                     break;
             }
         }
+    }
+
+    private ArrayList<Note> toList(String filename) throws FileNotFoundException {
+        ArrayList<Note> track = new ArrayList<>();
+        Scanner scan = new Scanner(new File("characters/" + filename));
+        while (scan.hasNext()) {
+            track.add(new Note(Integer.parseInt(scan.nextLine()), Integer.parseInt(scan.nextLine())));
+        }
+        return track;
     }
 }
