@@ -203,7 +203,7 @@ public class Compose {
                     screen.refresh();
                     break;
                 case Enter:
-                    if (Arrays.asList(new File("tracks").listFiles()).size() < 19 && track.size() > 2) {
+                    if (Arrays.asList(new File("tracks").listFiles()).size() < 20 && track.size() > 2) {
                         sm.saveThread();
                         FileWriter fileWriter = new FileWriter("tracks/" + filename.toString() + ".txt");
                         PrintWriter printWriter = new PrintWriter(fileWriter);
@@ -212,7 +212,7 @@ public class Compose {
                             printWriter.println(Integer.toString(note.getDuration()));
                         }
                         printWriter.close();
-                    } else if (Arrays.asList(new File("tracks").listFiles()).size() == 19) {
+                    } else if (Arrays.asList(new File("tracks").listFiles()).size() == 20) {
                         sm.alert(false);
                     } else if (track.size() < 3) {
                         sm.alert(true);
