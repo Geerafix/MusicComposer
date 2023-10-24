@@ -121,25 +121,48 @@ public class ScreenManipulate {
     }
 
     public void selectNoteUp(int x, int y) throws FileNotFoundException, InterruptedException {
-        readerYellow(new Scanner(new File("scenes/glowingUp.txt")), x, y);
-        screen.refresh();
-        Thread.sleep(23);
-        readerYellow(new Scanner(new File("scenes/classicUp.txt")), x, y);
+        Thread thread = new Thread(() -> {
+            try {
+                readerYellow(new Scanner(new File("scenes/glowingUp.txt")), x, y);
+                screen.refresh();
+                Thread.sleep(40);
+                readerYellow(new Scanner(new File("scenes/classicUp.txt")), x, y);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            putWhite(1, 1, " ");
+            screen.refresh();
+        });
+        thread.start();
     }
 
     public void selectNoteDown(int x, int y) throws FileNotFoundException, InterruptedException {
-        readerYellow(new Scanner(new File("scenes/glowingDown.txt")), x, y);
-        screen.refresh();
-        Thread.sleep(23);
-        readerYellow(new Scanner(new File("scenes/classicDown.txt")), x, y);
+        Thread thread = new Thread(() -> {
+            try {
+                readerYellow(new Scanner(new File("scenes/glowingDown.txt")), x, y);
+                screen.refresh();
+                Thread.sleep(40);
+                readerYellow(new Scanner(new File("scenes/classicDown.txt")), x, y);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            putWhite(1, 1, " ");
+            screen.refresh();
+        });
+        thread.start();
+
     }
 
     public void saveThread() {
         Thread thread = new Thread(() -> {
-            screen.putString(1, 1, "●", Terminal.Color.GREEN, Terminal.Color.BLACK,
-                    ScreenCharacterStyle.Bold);
-            screen.refresh();
             try {
+                screen.putString(1, 1, "●", Terminal.Color.GREEN, Terminal.Color.BLACK,
+                        ScreenCharacterStyle.Bold);
+                screen.refresh();
                 Thread.sleep(700);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -167,18 +190,18 @@ public class ScreenManipulate {
             thread.start();
         } else if (bool == false) {
             Thread thread = new Thread(() -> {
-            screen.putString(39, 1, "Delete some track", Terminal.Color.RED, Terminal.Color.BLACK,
-                    ScreenCharacterStyle.Bold);
-            screen.refresh();
-            try {
-                Thread.sleep(2800);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            putWhite(39, 1, "                 ");
-            screen.refresh();
-        });
-        thread.start();
+                screen.putString(39, 1, "Delete some track", Terminal.Color.RED, Terminal.Color.BLACK,
+                        ScreenCharacterStyle.Bold);
+                screen.refresh();
+                try {
+                    Thread.sleep(2800);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                putWhite(39, 1, "                 ");
+                screen.refresh();
+            });
+            thread.start();
         }
     }
 }
