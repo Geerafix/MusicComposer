@@ -123,14 +123,14 @@ public class ScreenManipulate {
     public void selectNoteUp(int x, int y) throws FileNotFoundException, InterruptedException {
         readerYellow(new Scanner(new File("scenes/glowingUp.txt")), x, y);
         screen.refresh();
-        Thread.sleep(25);
+        Thread.sleep(23);
         readerYellow(new Scanner(new File("scenes/classicUp.txt")), x, y);
     }
 
     public void selectNoteDown(int x, int y) throws FileNotFoundException, InterruptedException {
         readerYellow(new Scanner(new File("scenes/glowingDown.txt")), x, y);
         screen.refresh();
-        Thread.sleep(30);
+        Thread.sleep(23);
         readerYellow(new Scanner(new File("scenes/classicDown.txt")), x, y);
     }
 
