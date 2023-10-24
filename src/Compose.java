@@ -95,7 +95,7 @@ public class Compose {
                     screen.refresh();
                     break;
                 case PageDown:
-                    if (currentDuration != 0) {
+                    if (currentDuration != 50) {
                         currentDuration -= 50;
                     }
                     sm.clearDuration();
@@ -154,7 +154,7 @@ public class Compose {
                             currentDuration = track.get(position).getDuration();
                         } else {
                             currentNote = track.get(position).getNumber() - 23;
-                            currentDuration = track.get(0).getDuration();
+                            currentDuration = track.get(position).getDuration();
                         }
                         sm.clearNote();
                         sm.clearDuration();
@@ -175,7 +175,7 @@ public class Compose {
                             currentDuration = track.get(position).getDuration();
                         } else {
                             currentNote = track.get(position).getNumber() - 23;
-                            currentDuration = track.get(0).getDuration();
+                            currentDuration = track.get(position).getDuration();
                         }
                         sm.clearNote();
                         sm.clearDuration();
