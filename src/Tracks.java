@@ -42,6 +42,10 @@ public class Tracks {
 
             switch (key.getKind()) {
                 case ArrowRight:
+                    if (thread != null) {
+                        thread.interrupt();
+                        synth.close();
+                    }
                     Title title = new Title(screen, sm);
                     title.title();
                     break;
@@ -109,6 +113,7 @@ public class Tracks {
                         Edit edit = new Edit(screen, sm);
                         if (thread != null) {
                             thread.interrupt();
+                            synth.close();
                         }
                         edit.edit(toList(tracksList.get(select).getName()),
                                 "tracks/" + tracksList.get(select).getName());
