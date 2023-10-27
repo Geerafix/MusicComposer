@@ -116,8 +116,15 @@ public class Edit {
                 case Delete:
                     if (position < track.size()) {
                         track.remove(position);
-                        currentNote = 1;
-                        currentDuration = 500;
+                        if (track.size() != 0) {
+                            if (track.get(track.size() - 1).getNumber() == 0) {
+                                currentNote = track.get(track.size() - 1).getNumber();
+                                currentDuration = track.get(track.size() - 1).getDuration();
+                            } else {
+                                currentNote = track.get(track.size() - 1).getNumber() - 23;
+                                currentDuration = track.get(track.size() - 1).getDuration();
+                            }
+                        }
                         position = track.size();
                         sm.clearNote();
                         sm.clearDuration();
