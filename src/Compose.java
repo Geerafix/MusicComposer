@@ -188,7 +188,6 @@ public class Compose {
                     break;
                 case Delete:
                     if (position < track.size()) {
-                        track.remove(position);
                         if (track.size() != 0) {
                             if (track.get(track.size() - 1).getNumber() == 0) {
                                 currentNote = track.get(track.size() - 1).getNumber();
@@ -198,7 +197,7 @@ public class Compose {
                                 currentDuration = track.get(track.size() - 1).getDuration();
                             }
                         }
-                        position = track.size();
+                        track.remove(position);                    
                         sm.clearNote();
                         sm.clearDuration();
                         sm.noteToASCIIArt(sm.noteConv(notes[currentNote]));
