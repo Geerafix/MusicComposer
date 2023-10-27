@@ -115,16 +115,16 @@ public class Edit {
                     break;
                 case Delete:
                     if (position < track.size()) {
-                        if (track.size() != 0) {
-                            if (track.get(track.size() - 1).getNumber() == 0) {
-                                currentNote = track.get(track.size() - 1).getNumber();
-                                currentDuration = track.get(track.size() - 1).getDuration();
+                        track.remove(position);   
+                        if (track.size() != 0 && position != track.size()) {
+                            if (track.get(position).getNumber() == 0) {
+                                currentNote = track.get(position).getNumber();
+                                currentDuration = track.get(position).getDuration();
                             } else {
-                                currentNote = track.get(track.size() - 1).getNumber() - 23;
-                                currentDuration = track.get(track.size() - 1).getDuration();
+                                currentNote = track.get(position).getNumber() - 23;
+                                currentDuration = track.get(position).getDuration();
                             }
-                        }
-                        track.remove(position);                  
+                        }               
                         sm.clearNote();
                         sm.clearDuration();
                         sm.noteToASCIIArt(sm.noteConv(notes[currentNote]));
