@@ -188,7 +188,7 @@ public class Compose {
                     break;
                 case Delete:
                     if (position < track.size()) {
-                        track.remove(position);   
+                        track.remove(position);
                         if (track.size() != 0 && position != track.size()) {
                             if (track.get(position).getNumber() == 0) {
                                 currentNote = track.get(position).getNumber();
@@ -197,7 +197,7 @@ public class Compose {
                                 currentNote = track.get(position).getNumber() - 23;
                                 currentDuration = track.get(position).getDuration();
                             }
-                        }                    
+                        }
                         sm.clearNote();
                         sm.clearDuration();
                         sm.noteToASCIIArt(sm.noteConv(notes[currentNote]));
@@ -235,9 +235,20 @@ public class Compose {
                             printWriter.println(Integer.toString(note.getNumber()));
                             printWriter.println(Integer.toString(note.getDuration()));
                         }
+                        printWriter.close();
                         track.clear();
                         tempTrack.delete();
-                        printWriter.close();
+                        sm.refreshTrack(trackX, trackY, track);
+                        position = 0;
+                        sm.putWhite(70, 1, "Position: " + (position + 1) + "  ");
+                        sm.putWhite(97, 1, Integer.toString(track.size()) + "  ");
+                        currentNote = 1;
+                        currentDuration = 500;
+                        sm.clearNote();
+                        sm.clearDuration();
+                        sm.noteToASCIIArt(sm.noteConv(notes[currentNote]));
+                        sm.durationToASCIIArt(currentDuration);
+                        screen.refresh();
                     } else if (Arrays.asList(new File("tracks").listFiles()).size() == 20) {
                         sm.alert(false);
                     } else if (track.size() < 3) {
